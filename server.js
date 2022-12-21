@@ -17,7 +17,6 @@ const User = require("./models/userModel");
 const Message = require("./models/messageModel");
 const Notification = require("./models/notificationModel");
 const ws = require("websocket-stream");
-const { updatedActiveStatus } = require("./wsControllers/userController");
 const { MESSAGES_FROM_CLIENT_TO_SERVER } = require("./pubSubTypes");
 const { saveMessageToDB } = require("./dbUtilities/message");
 const broker = require("aedes")();

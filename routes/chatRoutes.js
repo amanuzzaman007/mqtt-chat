@@ -10,6 +10,7 @@ const {
   removeFromGroup,
   fetchNotifications,
   addNotification,
+  deleteChat,
 } = require("../controllers/chatControllers");
 
 router.post("/", authMiddleware, accessChat);
@@ -22,5 +23,7 @@ router.post("/create-group", authMiddleware, createGroupChat);
 router.put("/rename-group", authMiddleware, renameGroupChat);
 router.put("/remove-from-group", authMiddleware, removeFromGroup);
 router.put("/add-to-group", authMiddleware, addToGroup);
+
+router.post("/delete", authMiddleware, deleteChat);
 
 module.exports = router;

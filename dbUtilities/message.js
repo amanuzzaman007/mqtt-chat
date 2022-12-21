@@ -23,7 +23,7 @@ const saveMessageToDB = async (packet, aedes) => {
   try {
     let payload = packet.payload.toString();
     payload = JSON.parse(payload);
-    const { sender, content, chatId, isVideo = false } = payload;
+    const { sender, content, chatId, isVideo = false, receivers } = payload;
 
     if (!content || !chatId) {
       return;
@@ -63,19 +63,19 @@ const saveMessageToDB = async (packet, aedes) => {
           as: "user",
         },
       },
-      {
-        $project: {
-          content: 1,
-          isVideo: 1,
-          createdAt: 1,
-          user: {
-            _id: 1,
-            name: 1,
-            isActive: 1,
-            pic: 1,
-          },
-        },
-      },
+      // {
+      //   $project: {
+      //     content: 1,
+      //     isVideo: 1,
+      //     createdAt: 1,
+      //     user: {
+      //       _id: 1,
+      //       name: 1,
+      //       isActive: 1,
+      //       pic: 1,
+      //     },
+      //   },
+      // },
       {
         $group: {
           _id: {
@@ -93,8 +93,13 @@ const saveMessageToDB = async (packet, aedes) => {
     // aedes.publish({ topic: "aedes/hello", payload: "I'm broker " + aedes.id });
 
     aedes.publish({
-      topic: `${MESSAGES_FROM_SERVER_TO_CLIENT}/${chatId}`,
-      payload: JSON.stringify({ messageToPublish, chatId, sender }),
+      topic: MESSAGES_FROM_SERVER_TO_CLIENT,
+      payload: JSON.stringify({
+        messageToPublish,
+        chatId,
+        sender,
+        receivers,
+      }),
     });
   } catch (err) {
     console.log("Error saving message", err);

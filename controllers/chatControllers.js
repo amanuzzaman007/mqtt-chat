@@ -254,6 +254,21 @@ const removeFromGroup = asyncHandler(async (req, res) => {
   }
 });
 
+const deleteChat = asyncHandler(async (req, res) => {
+  const { chatId } = req.body;
+
+  try {
+    await Chat.findOneAndDelete({
+      _id: chatId,
+      creator: req.user._id,
+    });
+
+    res.status(200).send("Chat Deleted");
+  } catch (err) {
+    res.status(500).send("Internal Server Error");
+  }
+});
+
 module.exports = {
   accessChat,
   fetchChats,
@@ -263,4 +278,5 @@ module.exports = {
   removeFromGroup,
   fetchNotifications,
   addNotification,
+  deleteChat,
 };
