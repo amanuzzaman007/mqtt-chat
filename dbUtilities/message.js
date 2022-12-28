@@ -39,7 +39,7 @@ const saveMessageToDB = async (packet, aedes) => {
 
     let message = await Message.create(newMessage);
 
-    message = await message.populate("sender", "name userId");
+    message = await message.populate("sender", "name pic email");
     message = await message.populate("chat");
 
     message = await User.populate(message, {
@@ -51,51 +51,51 @@ const saveMessageToDB = async (packet, aedes) => {
       latestMessage: message,
     });
 
-    const messageToPublish = await Message.aggregate([
-      {
-        $match: { _id: message._id },
-      },
-      {
-        $lookup: {
-          from: "users",
-          localField: "sender",
-          foreignField: "_id",
-          as: "user",
-        },
-      },
-      // {
-      //   $project: {
-      //     content: 1,
-      //     isVideo: 1,
-      //     createdAt: 1,
-      //     user: {
-      //       _id: 1,
-      //       name: 1,
-      //       isActive: 1,
-      //       pic: 1,
-      //     },
-      //   },
-      // },
-      {
-        $group: {
-          _id: {
-            $dateToString: {
-              format: "%Y-%m-%d",
-              date: "$createdAt",
-            },
-          },
-          messageByDate: {
-            $push: "$$ROOT",
-          },
-        },
-      },
-    ]);
+    // const messageToPublish = await Message.aggregate([
+    //   {
+    //     $match: { _id: message._id },
+    //   },
+    //   {
+    //     $lookup: {
+    //       from: "users",
+    //       localField: "sender",
+    //       foreignField: "_id",
+    //       as: "user",
+    //     },
+    //   },
+    //   // {
+    //   //   $project: {
+    //   //     content: 1,
+    //   //     isVideo: 1,
+    //   //     createdAt: 1,
+    //   //     user: {
+    //   //       _id: 1,
+    //   //       name: 1,
+    //   //       isActive: 1,
+    //   //       pic: 1,
+    //   //     },
+    //   //   },
+    //   // },
+    //   {
+    //     $group: {
+    //       _id: {
+    //         $dateToString: {
+    //           format: "%Y-%m-%d",
+    //           date: "$createdAt",
+    //         },
+    //       },
+    //       messageByDate: {
+    //         $push: "$$ROOT",
+    //       },
+    //     },
+    //   },
+    // ]);
     // aedes.publish({ topic: "aedes/hello", payload: "I'm broker " + aedes.id });
 
     aedes.publish({
       topic: MESSAGES_FROM_SERVER_TO_CLIENT,
       payload: JSON.stringify({
-        messageToPublish,
+        messageToPublish: message,
         chatId,
         sender,
         receivers,

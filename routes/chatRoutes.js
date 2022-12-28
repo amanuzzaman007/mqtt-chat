@@ -11,10 +11,12 @@ const {
   fetchNotifications,
   addNotification,
   deleteChat,
+  getChatById,
 } = require("../controllers/chatControllers");
 
 router.post("/", authMiddleware, accessChat);
 router.get("/", authMiddleware, fetchChats);
+router.get("/:chatId", authMiddleware, getChatById);
 router.post("/add-notification", authMiddleware, addNotification);
 router.get("/notifications", authMiddleware, fetchNotifications);
 

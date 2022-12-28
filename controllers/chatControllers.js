@@ -70,6 +70,38 @@ const accessChat = asyncHandler(async (req, res) => {
   }
 });
 
+const getChatById = asyncHandler(async (req, res) => {
+  try {
+    let isChat = await Chat.find({
+      _id: req.params.chatId,
+      $and: [
+        {
+          users: {
+            $elemMatch: {
+              $eq: req.user._id,
+            },
+          },
+        },
+      ],
+    })
+      .populate("users")
+      .populate("latestMessage")
+      .populate("creator");
+
+    isChat = await User.populate(isChat, {
+      path: "latestMessage.sender",
+      select: "name pic email isActive role userId isActive",
+    });
+    res.status(200).send(isChat);
+  } catch (err) {
+    console.log(err);
+    res.status(400).json({
+      success: false,
+      message: err.message,
+    });
+  }
+});
+
 const fetchChats = asyncHandler(async (req, res) => {
   try {
     Chat.find({
@@ -279,4 +311,5 @@ module.exports = {
   fetchNotifications,
   addNotification,
   deleteChat,
+  getChatById,
 };
