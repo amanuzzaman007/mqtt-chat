@@ -2,6 +2,7 @@ const asyncHandler = require("express-async-handler");
 const Chat = require("../models/chatModel");
 const User = require("../models/userModel");
 const Notification = require("../models/notificationModel");
+const mongoose = require("mongoose");
 
 const accessChat = asyncHandler(async (req, res) => {
   const { userId } = req.body;
@@ -72,6 +73,13 @@ const accessChat = asyncHandler(async (req, res) => {
 
 const getChatById = asyncHandler(async (req, res) => {
   try {
+    const ObjectId = mongoose.Types.ObjectId;
+    if (!ObjectId.isValid(req.params.chatId)) {
+      return res.status(400).json({
+        success: false,
+        message: "ID is not valid",
+      });
+    }
     let isChat = await Chat.find({
       _id: req.params.chatId,
       $and: [
