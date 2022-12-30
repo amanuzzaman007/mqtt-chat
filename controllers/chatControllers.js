@@ -225,7 +225,7 @@ const renameGroupChat = asyncHandler(async (req, res) => {
       }
     )
       .populate("users", "-password")
-      .populate("groupAdmin", "-password");
+      .populate("creator", "-password");
 
     if (!updatedChat) {
       res.status(404);
@@ -253,7 +253,7 @@ const addToGroup = asyncHandler(async (req, res) => {
     }
   )
     .populate("users", "-password")
-    .populate("groupAdmin", "-password");
+    .populate("creator", "-password");
 
   if (!addedData) {
     res.status(404);
@@ -265,6 +265,7 @@ const addToGroup = asyncHandler(async (req, res) => {
 
 const removeFromGroup = asyncHandler(async (req, res) => {
   const { chatId, userId } = req.body;
+  console.log({ userId });
 
   const updatedData = await Chat.findByIdAndUpdate(
     chatId,
@@ -276,7 +277,9 @@ const removeFromGroup = asyncHandler(async (req, res) => {
     {
       new: true,
     }
-  );
+  )
+    .populate("creator", "-password")
+    .populate("users", "-password");
 
   if (!updatedData) {
     res.status(404);
