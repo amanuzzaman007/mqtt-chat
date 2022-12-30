@@ -2,6 +2,7 @@ const asyncHandler = require("express-async-handler");
 const User = require("../models/userModel");
 const Chat = require("../models/chatModel");
 const Message = require("../models/messageModel");
+const { getLinkPreview } = require("link-preview-js");
 
 const sendMesage = asyncHandler(async (req, res) => {
   const { content, chatId, isVideo = false } = req.body;
@@ -112,4 +113,18 @@ const getAllMessages = asyncHandler(async (req, res) => {
   }
 });
 
-module.exports = { sendMesage, getAllMessages };
+// generate links
+const generateLink = asyncHandler(async (req, res) => {
+  try {
+    const { link } = req.body;
+    if (!link) {
+      return res.status(404).json({ message: "Link is not found!" });
+    }
+    const data = await getLinkPreview(link);
+    res.status(200).json(data);
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+});
+
+module.exports = { sendMesage, getAllMessages, generateLink };
