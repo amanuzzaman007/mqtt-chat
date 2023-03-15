@@ -9,6 +9,7 @@ const {
   addToGroup,
   removeFromGroup,
   fetchNotifications,
+  removeNotifications,
   addNotification,
   deleteChat,
   getChatById,
@@ -19,6 +20,7 @@ router.get("/", authMiddleware, fetchChats);
 router.get("/:chatId", authMiddleware, getChatById);
 router.post("/add-notification", authMiddleware, addNotification);
 router.get("/notifications", authMiddleware, fetchNotifications);
+router.post("/remove-notifications", authMiddleware, removeNotifications);
 
 // group chat
 router.post("/create-group", authMiddleware, createGroupChat);

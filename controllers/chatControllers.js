@@ -142,20 +142,23 @@ const fetchChats = asyncHandler(async (req, res) => {
 });
 
 const addNotification = asyncHandler(async (req, res) => {
-  const { sender, receivers, chatId, mgsId, isGroupChat } = req.body;
+  const { receiver, chatId, mgsId, isGroupChat = false } = req.body;
 
-  if (!sender || !receivers || !chatId || !mgsId) return;
+  if (!receiver || !chatId || !mgsId) return;
   try {
-    console.log("call add noti");
-    const notification = await Notification.create({
-      sender,
-      receivers,
+    await Notification.create({
+      sender: req.user._id,
+      receiver,
       chat: chatId,
       message: mgsId,
       isGroupChat: isGroupChat,
     });
 
-    res.status(201).json(notification);
+    const notifications = await Notification.find({
+      receiver: req.user._id,
+    });
+
+    res.status(200).json(notifications);
   } catch (err) {
     console.log(err);
     res.status(400).json({
@@ -167,17 +170,33 @@ const addNotification = asyncHandler(async (req, res) => {
 
 const fetchNotifications = asyncHandler(async (req, res) => {
   try {
-    const notifications = await User.find(
+    const notifications = await Notification.find(
       {
-        _id: req.user._id,
-      },
-      {
-        notifications: 1,
-        _id: 0,
+        receiver: req.user._id,
       }
+      // {
+      //   notifications: 1,
+      //   _id: 0,
+      // }
     );
 
-    res.status(200).json(notifications[0]);
+    res.status(200).json(notifications);
+  } catch (err) {
+    res.status(400).json({
+      success: false,
+      message: err.message,
+    });
+  }
+});
+
+const removeNotifications = asyncHandler(async (req, res) => {
+  try {
+    await Notification.deleteMany({ chat: req.body.chatId });
+    const notifications = await Notification.find({
+      receiver: req.user._id,
+    });
+
+    res.status(200).json(notifications);
   } catch (err) {
     res.status(400).json({
       success: false,
@@ -320,6 +339,7 @@ module.exports = {
   addToGroup,
   removeFromGroup,
   fetchNotifications,
+  removeNotifications,
   addNotification,
   deleteChat,
   getChatById,

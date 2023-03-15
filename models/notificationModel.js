@@ -6,12 +6,11 @@ const nofiticationSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
     },
-    receivers: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
-      },
-    ],
+    receiver: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
+
     chat: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Chat",
