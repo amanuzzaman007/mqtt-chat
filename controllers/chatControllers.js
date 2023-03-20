@@ -322,7 +322,6 @@ const deleteChat = asyncHandler(async (req, res) => {
   try {
     await Chat.findOneAndDelete({
       _id: chatId,
-      creator: req.user._id,
     });
 
     res.status(200).send("Chat Deleted");
