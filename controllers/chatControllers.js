@@ -146,7 +146,7 @@ const addNotification = asyncHandler(async (req, res) => {
 
   if (!receiver || !chatId || !mgsId) return;
   try {
-    await Notification.create({
+    const notification = await Notification.create({
       sender: req.user._id,
       receiver,
       chat: chatId,
@@ -158,7 +158,7 @@ const addNotification = asyncHandler(async (req, res) => {
       receiver: req.user._id,
     });
 
-    res.status(200).json(notifications);
+    res.status(200).json([notification]);
   } catch (err) {
     console.log(err);
     res.status(400).json({
